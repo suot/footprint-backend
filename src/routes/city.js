@@ -4,7 +4,6 @@ const router = express.Router();
 
 
 // Create a new city or update an existing city with increased visitedTime and score
-// Post localhost:3000/city with a City model
 router.post('/city', (req, res) => {
     //req.body
     if(!req.body){
@@ -13,16 +12,16 @@ router.post('/city', (req, res) => {
 
     let model = new City(req.body)
 
-    City.findOne({ country: model.country, city: model.city }).then( doc => {
+    City.findOne({ country: model.country, name: model.name }).then( doc => {
         if(!doc || doc.length === 0){
             //insert a new row
             model.save().then( newCity => {
-                return res.status(201).send(newCity)
+                return res.status(201).json(newCity)
             }).catch(err=>{ res.status(500).json(err) })
         }else{
             //update an existing row
-            doc.updateOne({visitedTimes: doc.visitedTimes+1, score: doc.score + model.score}).then(originalCity => {
-                return res.status(205).send(originalCity)
+            doc.updateOne({visitedTimes: doc.visitedTimes+1, score: doc.score + model.score}, {new: true}).then(newCity => {
+                return res.status(205).json(newCity)
             }).catch(err=>{ res.status(500).json(err) })
         }
     }).catch( err => res.status(500).json(err))
@@ -30,7 +29,6 @@ router.post('/city', (req, res) => {
 
 
 // Update a city with decreased visitedTime and score
-// Post localhost:3000/city with a City model
 router.post('/city/decrease', (req, res) => {
     //req.body
     if(!req.body){
@@ -39,19 +37,19 @@ router.post('/city/decrease', (req, res) => {
 
     let model = new City(req.body)
 
-    City.findOne({ country: model.country, city: model.city }).then( doc => {
+    City.findOne({ country: model.country, name: model.name }).then( doc => {
         if(!doc || doc.length === 0){
-            return res.status(204).send("Could not find this city in Database: " + model.city + ", " + model.country)
+            return res.status(204).send("Could not find this city in Database: " + model.name + ", " + model.country)
         }else{
             if( doc.visitedTimes === 1){
-                //remove that row
+                //remove
                 doc.remove().then( removedCity => {
-                    return res.status(202).send(removedCity)
+                    return res.status(202).json(removedCity)
                 }).catch(err=>{ res.status(500).json(err) })
             }else{
-                //update that row
-                doc.updateOne({visitedTimes: doc.visitedTimes-1, score: doc.score - model.score}).then(originalCity => {
-                    return res.status(205).send(originalCity)
+                //update
+                doc.updateOne({visitedTimes: doc.visitedTimes-1, score: doc.score - model.score}, {new: true}).then(newCity => {
+                    return res.status(205).json(newCity)
                 }).catch(err=>{ res.status(500).json(err) })
             }
         }

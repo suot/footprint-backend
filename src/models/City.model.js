@@ -1,8 +1,7 @@
 const mongoose = require('mongoose')
 const db = require('./dbConnectionString')
 
-//const connectionString = 'mongodb+srv://footprint:footprint@cluster-footprint-uglmu.gcp.mongodb.net/footprint_Canada?retryWrites=true'
-mongoose.connect(db.db_Canada)
+mongoose.connect(db.db_Canada, { useNewUrlParser: true })
 
 
 let citySchema = new mongoose.Schema({
@@ -10,8 +9,16 @@ let citySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    city: {
+    name: {
         type: String,
+        required: true,
+    },
+    lat:{
+        type: Number,
+        required: true,
+    },
+    lng:{
+        type: Number,
         required: true,
     },
     visitedTimes: {
