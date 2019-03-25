@@ -23,11 +23,11 @@ let citySchema = new mongoose.Schema({
     },
     visitedTimes: {
         type: Number,
-        default: 1
+        default: 0
     },
     score: {
         type: Number,
-        default: 3
+        default: 0
     },
 });
 
