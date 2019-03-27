@@ -71,7 +71,11 @@ insertTravelRecord = (res, userId, cityId, travel) => {
         rating: travel.rating,
         footprints: travel.footprints
     })
-    travelModel.save().then( newTravel => { return res.status(201).json(newTravel) }).catch(err=>{ return res.status(500).json(err) })
+    travelModel.save().then( newTravel => {
+        Travel.findById(newTravel._id).populate('city').then( doc => {
+            return res.status(200).json(doc)
+        }).catch( err => res.status(500).json(err))
+    }).catch(err=>{ return res.status(500).json(err) })
 }
 
 
