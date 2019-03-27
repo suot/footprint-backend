@@ -1,11 +1,15 @@
 const mongoose = require('mongoose')
 const db = require('./dbConnectionString')
+const Schema = mongoose.Schema;
 
 mongoose.connect(db.db_Canada, { useNewUrlParser: true })
 
 let travelSchema = new mongoose.Schema({
     userId: String,
-    cityId: String,
+    city: {
+        type: Schema.Types.ObjectId,
+        ref:'City'
+    },
     startDate: { type: Date, default: Date.now },
     endDate: { type: Date, default: Date.now },
     travelType: String,
