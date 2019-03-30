@@ -15,7 +15,8 @@ let travelSchema = new mongoose.Schema({
     travelType: String,
     cost: { type: Number, default: 0 },
     rating: { type: Number, min: 1, max: 5, default: 3 },
-    footprints: [{}]
+    footprints: [],
+    createdAt: { type: Date, default: Date.now }
 })
 
 module.exports = mongoose.model('Travel', travelSchema, 'travels')

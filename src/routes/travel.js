@@ -12,9 +12,6 @@ const mongoose = require('mongoose')
 
 // localhost:3000/travel?uid=abc
 router.get('/travel', function(req, res) {
-    if(!req.body){
-        return res.status(400).send('Request body is missing')
-    }
     const userId = req.query.userId
     if(userId){
         Travel.find({ userId: userId }).populate('city').then( doc => {
@@ -53,8 +50,8 @@ router.post('/travel', (req, res) => {
             }).catch(err => res.status(500).json(err))
         }else{
             //update an existing city
-            doc.updateOne({visitedTimes: doc.visitedTimes + 1, score: doc.score + travel.rating}, {new: true}).then(newCity => {
-                insertTravelRecord(res, userId, newCity._id, travel);
+            doc.updateOne({visitedTimes: doc.visitedTimes + 1, score: doc.score + travel.rating}).then(newCity => {
+                insertTravelRecord(res, userId, doc._id, travel);
             }).catch(err => res.status(500).json(err))
         }
     }).catch( err => res.status(500).json(err))

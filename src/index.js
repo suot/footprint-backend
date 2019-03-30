@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const travelRoute = require('./routes/travel');
-// const cityRoute = require('./routes/city');
+const warehouseRoute = require('./routes/warehouse');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
@@ -18,7 +18,7 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 
 app.use(travelRoute);
-// app.use(cityRoute);
+app.use(warehouseRoute);
 app.use(express.static('public'))
 
 
