@@ -7,7 +7,6 @@ const sampleCities = require('../warehouse/sampleCities.json')
 const gen = require('random-seed')
 
 
-
 //administrative account for inserting or deleting records
 const userId = 'Shq0mT4HMBRQ7EGJkeWiw3tcSal1';
 
@@ -32,7 +31,7 @@ getRandomEndDate = (n, startDate) => {
 
 //Insert sample date into DB
 // localhost:3001/warehouse/sampleTravels?amount=100
-router.get('/warehouse/sampleTravels', function(req, res) {
+router.get('/sampleTravels/add', function(req, res) {
     if(!req.query.amount || req.query.amount === 0){
         return res.status(400).send('Request parameter is missing')
     }else{
@@ -57,7 +56,6 @@ addTravelsRecursively = (res, n, amount) => {
         city = sampleCities[i];
         //to make it better distributed
         j = getRandomNumber(n+""+cost, 0, city.types.length-1);
-        console.log("j: ", j);
         type = city.types[j];
         latlng = {
             lat: city.lat,
@@ -87,6 +85,8 @@ addTravelsRecursively = (res, n, amount) => {
                 }).catch(err => res.status(500).json(err))
             }
         }).catch( err => res.status(500).json(err))
+    }else{
+        res.status(200).send("Add sample data to source db successfully!");
     }
 }
 
@@ -102,7 +102,6 @@ insertIntoTravels = (res, n, amount, userId, cityId, startDate, endDate, type, c
     })
 
     travelModel.save().then( newTravel => {
-        res.status(200);
         console.log("Number of records saved: "+n);
         addTravelsRecursively(res, n, amount);
     }).catch( err => res.status(500).json(err))
@@ -123,6 +122,8 @@ deleteTravelRecursively = (res, n, travels) => {
         travel.remove().then(()=>{
             updateCity(res, n, travels);
         }).catch(err=>{ res.status(500) })
+    }else{
+        res.status(202).send("Delete sample data from source database successfully!");
     }
 }
 
@@ -131,18 +132,13 @@ updateCity = (res, n, travels) => {
         if(!doc || doc.length === 0){
             res.status(500)
         }else{
-            let percent = Math.floor(n/travels.length * 100);
-
             if( doc.visitedTimes === 1){
-                doc.remove().then( ()=> res.status(202).json({percent: percent}) ).catch( err => { res.status(500) })
+                doc.remove().then(()=>{deleteTravelRecursively(res, ++n, travels);}).catch( err => { res.status(500) })
             }else{
-                doc.updateOne({visitedTimes: doc.visitedTimes - 1, score: doc.score - travels[n-1].rating}).then(()=> res.status(202).json({percent: percent})).catch( err => { res.status(500) })
+                doc.updateOne({visitedTimes: doc.visitedTimes - 1, score: doc.score - travels[n-1].rating}).then(()=>{deleteTravelRecursively(res, ++n, travels);}).catch( err => { res.status(500) })
             }
         }
-        deleteTravelRecursively(res, ++n, travels);
-
     }).catch( err => { res.status(500) })
 }
-
 
 module.exports = router;

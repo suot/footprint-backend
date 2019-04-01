@@ -1,9 +1,11 @@
 const express = require('express');
 const path = require('path');
 const travelRoute = require('./routes/travel');
-const warehouseRoute = require('./routes/warehouse');
+const sampleRoute = require('./routes/sample');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+
+
 
 const app = express();
 app.use(cors());
@@ -18,7 +20,7 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 
 app.use(travelRoute);
-app.use(warehouseRoute);
+app.use(sampleRoute);
 app.use(express.static('public'))
 
 

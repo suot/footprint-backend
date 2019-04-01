@@ -1,12 +1,10 @@
-const mongoose = require('mongoose')
+let mongoose = require('mongoose');
 const db = require('./dbConnectionString')
-const Schema = mongoose.Schema;
-
-mongoose.connect(db.db_Canada, { useNewUrlParser: true })
+mongoose.connect(db.db_Canada);
 
 
 let citySchema = new mongoose.Schema({
-    _id: Schema.Types.ObjectId,
+    _id: mongoose.Schema.Types.ObjectId,
     country: {
         type: String,
         required: true,

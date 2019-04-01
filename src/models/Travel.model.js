@@ -1,13 +1,11 @@
-const mongoose = require('mongoose')
+let mongoose = require('mongoose');
 const db = require('./dbConnectionString')
-const Schema = mongoose.Schema;
-
-mongoose.connect(db.db_Canada, { useNewUrlParser: true })
+mongoose.connect(db.db_Canada);
 
 let travelSchema = new mongoose.Schema({
     userId: String,
     city: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref:'City'
     },
     startDate: { type: Date, default: Date.now },
@@ -19,4 +17,5 @@ let travelSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 })
 
-module.exports = mongoose.model('Travel', travelSchema, 'travels')
+
+module.exports = mongoose.model('Travel', travelSchema, 'travels');

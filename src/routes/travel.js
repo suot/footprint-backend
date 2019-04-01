@@ -10,7 +10,7 @@ const mongoose = require('mongoose')
 //   res.send(`You have requested a footprint ${req.params.uid}`);
 // });
 
-// localhost:3000/travel?uid=abc
+// localhost:3001/travel?uid=abc
 router.get('/travel', function(req, res) {
     const userId = req.query.userId
     if(userId){
@@ -18,7 +18,17 @@ router.get('/travel', function(req, res) {
             return res.status(200).json(doc)
         }).catch( err => res.status(500).json(err))
     }else{
-        res.send('You have not included a userId in your request');
+        //res.send('You have not included a userId in your request');
+        // Travel.find().then( doc => {
+        //     return res.status(200).json(doc)
+        // }).catch( err => res.status(500).json(err))
+
+        Travel.find().populate('city').then( doc => {
+            return res.status(200).json(doc)
+        }).catch( err => {
+            console.log(err);
+            res.status(500).json(err)
+        })
     }
 });
 
