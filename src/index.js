@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const travelRoute = require('./routes/travel');
-const sampleRoute = require('./routes/sample');
+const sampleRoute = require('./routes/sampleCities');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
@@ -21,29 +21,29 @@ app.use(bodyParser.json());
 
 app.use(travelRoute);
 app.use(sampleRoute);
-app.use(express.static('public'))
+app.use(express.static('public'));
 
 
 //next(): execute functions in pipeline
 app.use((req, res, next) => {
-    console.log(`${new Date().toString()} => ${req.originalUrl}`)
+    console.log(`${new Date().toString()} => ${req.originalUrl}`);
     next()
-})
+});
 
 //Handler for 404 - Resource Not Found
-app.use((req, res, next) => {
+app.use((req, res) => {
     res.status(404).send('We think you are lost!')
-})
+});
 
 //Handler for 500 - Resource Not Found
-app.use((err, req, res, next) => {
-    console.error(err.stack)
+app.use((err, req, res) => {
+    console.error(err.stack);
     res.sendFile(path.join(__dirname, '../public/500.html'))
-})
+});
 
 
 //some cloud servers may use the process.env.PORT
-const PORT = process.env.PORT || 3001
-app.listen(PORT, () => console.info(`Server has started on ${PORT}`))
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.info(`Server has started on ${PORT}`));
 
 

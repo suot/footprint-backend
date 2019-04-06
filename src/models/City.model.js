@@ -1,5 +1,5 @@
 let mongoose = require('mongoose');
-const db = require('./dbConnectionString')
+const db = require('./config');
 mongoose.connect(db.db_Canada);
 
 

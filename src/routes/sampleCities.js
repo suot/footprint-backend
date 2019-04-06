@@ -2,32 +2,32 @@ const express = require('express');
 const router = express.Router();
 const Travel = require('../models/Travel.model');
 const City = require('../models/City.model');
-const mongoose = require('mongoose')
-const sampleCities = require('../warehouse/sampleCities.json')
-const gen = require('random-seed')
+const mongoose = require('mongoose');
+const sampleCities = require('../warehouse/sampleCities.json');
+const config = require('../models/config');
 
 
 //administrative account for inserting or deleting records
-const userId = 'Shq0mT4HMBRQ7EGJkeWiw3tcSal1';
+const userId = config.admin;
 
-
+const gen = require('random-seed');
 getRandomNumber = (n, min, max) => {
     let seed = n + "" + new Date().getSeconds();
     return gen(seed).intBetween(min, max);
-}
+};
 
 //start = "2018-01-01", end="2019-03-31"
 getRandomDate = (n, start, end) => {
-    start = new Date(start)
-    end = new Date(end)
+    start = new Date(start);
+    end = new Date(end);
     let seed = n + "" + new Date().getSeconds();
     return new Date(start.getTime() + gen(seed).floatBetween(0, 1) * (end.getTime() - start.getTime()))
-}
+};
 
 getRandomEndDate = (n, startDate) => {
     let seed = n + "" + new Date().getSeconds();
     return new Date(startDate.getTime() + gen(seed).intBetween(1, 30) * 3600*12*1000);
-}
+};
 
 //Insert sample date into DB
 // localhost:3001/warehouse/sampleTravels?amount=100
@@ -60,7 +60,7 @@ addTravelsRecursively = (res, n, amount) => {
         latlng = {
             lat: city.lat,
             lng: city.lng
-        }
+        };
 
         City.findOne({ country: city.country, name: city.name }).then( doc => {
             if(!doc || doc.length === 0){
@@ -72,7 +72,7 @@ addTravelsRecursively = (res, n, amount) => {
                     latlng: latlng,
                     visitedTimes: 1,
                     score: rating,
-                })
+                });
 
                 //retrieve the _id of the new inserted city
                 cityModel.save().then( newCity => {
@@ -80,7 +80,7 @@ addTravelsRecursively = (res, n, amount) => {
                 }).catch(err => res.status(500).json(err))
             }else{
                 //update an existing city
-                doc.updateOne({visitedTimes: doc.visitedTimes + 1, score: doc.score + rating}).then(newCity => {
+                doc.updateOne({visitedTimes: doc.visitedTimes + 1, score: doc.score + rating}).then(() => {
                     insertIntoTravels(res, n, amount, userId, doc._id, startDate, endDate, type, cost, rating);
                 }).catch(err => res.status(500).json(err))
             }
@@ -88,7 +88,7 @@ addTravelsRecursively = (res, n, amount) => {
     }else{
         res.status(200).send("Add sample data to source db successfully!");
     }
-}
+};
 
 insertIntoTravels = (res, n, amount, userId, cityId, startDate, endDate, type, cost, rating) => {
     let travelModel = new Travel({
@@ -99,21 +99,21 @@ insertIntoTravels = (res, n, amount, userId, cityId, startDate, endDate, type, c
         travelType: type,
         cost: cost,
         rating: rating,
-    })
+    });
 
-    travelModel.save().then( newTravel => {
+    travelModel.save().then( () => {
         console.log("Number of records saved: "+n);
         addTravelsRecursively(res, n, amount);
     }).catch( err => res.status(500).json(err))
-}
+};
 
 
 // Delete sample data
 router.delete('/warehouse/sampleTravels', (req, res) => {
     Travel.find({userId: userId}).then(travels => {
         deleteTravelRecursively(res, 1, travels);
-    }).catch( err => res.status(500))
-})
+    }).catch( () => res.status(500))
+});
 
 deleteTravelRecursively = (res, n, travels) => {
     if(n <= travels.length){
@@ -121,11 +121,11 @@ deleteTravelRecursively = (res, n, travels) => {
 
         travel.remove().then(()=>{
             updateCity(res, n, travels);
-        }).catch(err=>{ res.status(500) })
+        }).catch(()=>{ res.status(500) })
     }else{
         res.status(202).send("Delete sample data from source database successfully!");
     }
-}
+};
 
 updateCity = (res, n, travels) => {
     City.findById(travels[n-1].city).then( doc => {
@@ -133,12 +133,12 @@ updateCity = (res, n, travels) => {
             res.status(500)
         }else{
             if( doc.visitedTimes === 1){
-                doc.remove().then(()=>{deleteTravelRecursively(res, ++n, travels);}).catch( err => { res.status(500) })
+                doc.remove().then(()=>{deleteTravelRecursively(res, ++n, travels);}).catch( () => { res.status(500) })
             }else{
-                doc.updateOne({visitedTimes: doc.visitedTimes - 1, score: doc.score - travels[n-1].rating}).then(()=>{deleteTravelRecursively(res, ++n, travels);}).catch( err => { res.status(500) })
+                doc.updateOne({visitedTimes: doc.visitedTimes - 1, score: doc.score - travels[n-1].rating}).then(()=>{deleteTravelRecursively(res, ++n, travels);}).catch( () => { res.status(500) })
             }
         }
-    }).catch( err => { res.status(500) })
-}
+    }).catch( () => { res.status(500) })
+};
 
 module.exports = router;

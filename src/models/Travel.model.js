@@ -1,5 +1,5 @@
 let mongoose = require('mongoose');
-const db = require('./dbConnectionString')
+const db = require('./config');
 mongoose.connect(db.db_Canada);
 
 let travelSchema = new mongoose.Schema({
@@ -15,7 +15,7 @@ let travelSchema = new mongoose.Schema({
     rating: { type: Number, min: 1, max: 5, default: 3 },
     footprints: [],
     createdAt: { type: Date, default: Date.now }
-})
+});
 
 
 module.exports = mongoose.model('Travel', travelSchema, 'travels');
